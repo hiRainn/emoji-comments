@@ -1,8 +1,8 @@
 <template>
 	<div class="comments-list">
-		<el-row class="comments-list-item" v-for="(item,index) in comments" v-bind:key="index" >
+		<a-row class="comments-list-item" v-for="(item,index) in comments" v-bind:key="index" >
 			<div class="comments-list-item-heading">
-				<!-- <el-avatar :size="100" fit="contain" src="./assets/img/heading.jpg"></el-avatar> -->
+				<!-- <a-avatar :size="100" fit="contain" src="./assets/img/heading.jpg"></a-avatar> -->
 				<img src="../assets/img/heading.jpg" style="width: 30px;height: 30px;"/>
 				<span class="comments-list-item-username">{{item.data.name}} -- {{item.data.id}}</span>
 			</div>
@@ -10,7 +10,7 @@
 			<div class="item-child" v-if="item.children.length > 0">
 				<list :comments="item.children"></list>
 			</div>
-		</el-row>
+		</a-row>
 		<!-- <div class="comments-list-item" v-for="(item,index) in comments" v-bind:key="index">
 			<div class="comments-list-item-heading">
 				<img src="./assets/img/heading.jpg" />

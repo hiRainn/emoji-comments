@@ -1,13 +1,13 @@
 <template>
   <div class="emoji-panel-wrap">
-	  <el-row>
+	  <a-row>
 		  <emoji
 		    v-for="(item,index) in emojis"
 		    :text="item"
 		    v-bind:key="index"
 		    @onClick="handleEmojiClick"
 		  ></emoji>
-	  </el-row>
+	  </a-row>
   </div>
 </template>
 <script>

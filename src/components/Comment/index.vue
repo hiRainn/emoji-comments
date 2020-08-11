@@ -1,51 +1,69 @@
 <template>
 	<div class="comment-wrap">
-		<el-row class="row-comment-list">
-			<comment-list :comments="getCommentList" :replayText="replayText" :reportText="reportText" class="hidden-xs-only"></comment-list>
+		<a-row class="row-comment-list">
+			<comment-list 
+			@clickReplay="clickReplay"  
+			@clickReport="clickReport" 
+			@clickUnlike="clickUnlike" 
+			@clickLike="clickLike" 
+			:comments="getCommentList" 
+			:showLike="showLike"
+			:showUnlike="showUnlike"
+			:showReplay="showReplay"
+			:showReport="showReport"
+			:showEmail="showEmail"
+			:showName="showName"
+			:AnonymousText="AnonymousText"
+			:like="like"
+			:unlike="unlike"
+			:likeColor="likeColor"
+			:unlikeColor="unlikeColor"
+			:replayText="replayText" 
+			:reportText="reportText" />
 			<comment-list-phone :comments="getCommentList" class="hidden-sm-and-up"></comment-list-phone>
-		</el-row>
+		</a-row>
 		
-		<el-row class="comment-area">
+		<a-row class="comment-area">
 			<a href="#replay" id="areplay"></a>
-			<el-row class="comment" id="replay">
+			<a-row class="comment" id="replay">
 				<span :hidden="!showTip">{{tipText}}</span>
-				<el-form :label-position="label_position" label-width="80px">
-					<el-form-item v-if="showName" :label="nameText">
-						<el-input v-model="form.name" @change="changesave"></el-input>
-					</el-form-item>
-					<el-form-item v-if="showEmail" :label="emailText">
+				<a-form :label-position="label_position" label-width="80px">
+					<a-form-item v-if="showName" :label="nameText">
+						<a-input v-model="form.name" @change="changesave"></a-input>
+					</a-form-item>
+					<a-form-item v-if="showEmail" :label="emailText">
 						
-						<el-input v-model="form.email" @change="changesave"></el-input>
-					</el-form-item>
+						<a-input v-model="form.email" @change="changesave"></a-input>
+					</a-form-item>
 			
-					<el-form-item>
-						<el-row>
-							<el-input type="textarea" id="textpanel" rows="3" v-model="form.content"></el-input>
-							<!-- <el-input type="textarea" class="comment-input" placeholder="" id="textpanel" v-model="content"></el-input> -->
+					<a-form-item>
+						<a-row>
+							<a-input type="textarea" id="textpanel" rows="3" v-model="form.content"></a-input>
+							<!-- <a-input type="textarea" class="comment-input" placeholder="" id="textpanel" v-model="content"></a-input> -->
 							<div class="opration">
 								<div class="emoji-panel-btn" @click="showEmojiPanel">
 									<img src="./assets/img/face_logo.png" />
 								</div>
 								<div>
-									<el-button @click="cancle" round size="small" style="align-self: flex-end;" v-if="form.pid != 0" :hidden="form.pid ">{{cancleText}}</el-button>
-									<el-button @click="saveComment" round size="small" style="align-self: flex-end;" :disabled="form.content.trim() == ''">{{buttonText}}</el-button>
+									<a-button @click="cancle" round size="small" style="align-self: flex-end;" v-if="form.pid != 0" :hidden="form.pid ">{{cancleText}}</a-button>
+									<a-button @click="saveComment" round size="small" style="align-self: flex-end;" :disabled="form.content.trim() == ''">{{buttonText}}</a-button>
 								</div>
 								
 							</div>
-						</el-row>
+						</a-row>
 						
-						<el-row>
+						<a-row>
 							<emoji-panel @emojiClick="appendEmoji" v-if="isShowEmojiPanel"></emoji-panel>
-						</el-row>
-					</el-form-item>
-					<el-form-item>
-						<el-checkbox v-model="save" @change="setLocal">{{saveText}}</el-checkbox>
-					</el-form-item>
-				</el-form>
+						</a-row>
+					</a-form-item>
+					<a-form-item>
+						<a-checkbox v-model="save" @change="setLocal">{{saveText}}</a-checkbox>
+					</a-form-item>
+				</a-form>
 			
-			</el-row>
+			</a-row>
 			
-		</el-row>
+		</a-row>
 		
 	</div>
 </template>
@@ -59,6 +77,10 @@
 			list:{
 				type:Array,
 				default:[]
+			},
+			AnonymousText:{
+				type: String,
+				default: '匿名用户'
 			},
 			tipText:{
 				type: String,
@@ -120,14 +142,6 @@
 				type:Boolean,
 				default:true
 			},
-			showReport:{
-				type:Boolean,
-				default:true
-			},
-			showReplay:{
-				type:Boolean,
-				default:true
-			},
 			showName:{
 				type:Boolean,
 				default:false
@@ -139,6 +153,14 @@
 			showTip:{
 				type:Boolean,
 				default:false
+			},
+			likeColor:{
+				type: String,
+				default: 'red',//mixed
+			},
+			unlikeColor:{
+				type: String,
+				default: 'gray',//mixed
 			},
 		},
 		data() {
@@ -168,6 +190,7 @@
 			CommentListPhone
 		},
 		methods: {
+			
 			cancle() {
 				this.form.pid = 0;
 				$('#replay').insertAfter($('#areplay'))
@@ -215,6 +238,21 @@
 					localStorage.setItem('comment_email',this.form.email)
 				}
 			},
+			clickReplay(id) {
+				this.form.pid = parseInt(id)
+				var id = '#replay_' + this.form.pid
+				$('#replay').appendTo($(id))
+				$("html,body").animate({scrollTop: $("#replay").offset().top - "100" + "px"}, 400);
+			},
+			clickReport(id) {
+				this.$emit('clickReport',id)
+			},
+			clickUnlike(id) {
+				this.$emit('clickUnlike',id)
+			},
+			clickLike(id) {
+				this.$emit('clickLike',id)
+			},
 		},
 		mounted(){
 			//get comment info
@@ -224,15 +262,6 @@
 				this.form.name = localStorage.getItem('comment_name')
 				this.form.email = localStorage.getItem('comment_email')
 			}
-			//bond pc replay
-			var that = this
-			$('.comments-list').on('click','.replay_pc',function() {
-				that.form.pid = parseInt($(this).attr('data'))
-				var id = '#replay_' + $(this).attr('data')
-				$('#replay').appendTo($(id))
-				$("html,body").animate({scrollTop: $("#replay").offset().top - "100" + "px"}, 400);
-			
-			})
 		}
 	};
 </script>
