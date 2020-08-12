@@ -1,29 +1,33 @@
 <template>
 	<div class="comment-wrap">
 		<a-row class="row-comment-list">
-			<comment-list 
-			@clickReplay="clickReplay"  
-			@clickReport="clickReport" 
-			@clickUnlike="clickUnlike" 
-			@clickLike="clickLike" 
-			:comments="getCommentList" 
-			:showLike="showLike"
-			:showUnlike="showUnlike"
-			:showReplay="showReplay"
-			:showReport="showReport"
-			:showEmail="showEmail"
-			:showName="showName"
-			:AnonymousText="AnonymousText"
-			:like="like"
-			:unlike="unlike"
-			:likeColor="likeColor"
-			:unlikeColor="unlikeColor"
-			:replayText="replayText" 
-			:reportText="reportText" />
-			<comment-list-phone :comments="getCommentList" class="hidden-sm-and-up"></comment-list-phone>
+			<a-col  :xs="0" :md="24">
+				<!-- v-if for async  -->
+				<comment-list
+				v-if="list.length > 0" 
+				@Replay="Replay"  
+				@clickReport="clickReport" 
+				@clickUnlike="clickUnlike" 
+				@clickLike="clickLike" 
+				:comments="list" 
+				:showLike="showLike"
+				:showUnlike="showUnlike"
+				:showReplay="showReplay && allowComment"
+				:showReport="showReport"
+				:showEmail="showEmail"
+				:showName="showName"
+				:AnonymousText="AnonymousText"
+				:likeColor="likeColor"
+				:unlikeColor="unlikeColor"
+				:replayText="replayText" 
+				:reportText="reportText" />
+			</a-col>
+			<a-col  :xs="24" :md="0">
+				<!-- <comment-list-phone :comments="list" class="hidden-sm-and-up"></comment-list-phone> -->
+			</a-col>
 		</a-row>
 		
-		<a-row class="comment-area">
+		<a-row class="comment-area" v-if="allowComment">
 			<a href="#replay" id="areplay"></a>
 			<a-row class="comment" id="replay">
 				<span :hidden="!showTip">{{tipText}}</span>
@@ -45,7 +49,7 @@
 									<img src="./assets/img/face_logo.png" />
 								</div>
 								<div>
-									<a-button @click="cancle" round size="small" style="align-self: flex-end;" v-if="form.pid != 0" :hidden="form.pid ">{{cancleText}}</a-button>
+									<a-button @click="cancle" round size="small" style="align-self: flex-end;margin-right: 10px;" v-if="form.pid != 0" :hidden="!form.pid ">{{cancleText}}</a-button>
 									<a-button @click="saveComment" round size="small" style="align-self: flex-end;" :disabled="form.content.trim() == ''">{{buttonText}}</a-button>
 								</div>
 								
@@ -118,14 +122,6 @@
 				type:String,
 				default:'replay'
 			},
-			like:{
-				type:Number,
-				default:0
-			},
-			unlike:{
-				type:Number,
-				default:0
-			},
 			showReport:{
 				type:Boolean,
 				default:true
@@ -154,6 +150,10 @@
 				type:Boolean,
 				default:false
 			},
+			allowComment:{
+				type:Boolean,
+				default:true
+			},
 			likeColor:{
 				type: String,
 				default: 'red',//mixed
@@ -177,12 +177,7 @@
 			}
 		},
 		computed:{
-			getCommentList(){
-				return this.list
-			},
-			getReplayText(){
-				return this.replayText
-			}
+			
 		},
 		components: {
 			EmojiPanel,
@@ -208,7 +203,41 @@
 				if(this.showEmail) {
 					this.form.email = this.form.email
 				}
-				this.$emit('submit', this.form)
+				this.$emit('submit', this.form , r => {
+					//update list   r =  { id:, content:, name:,   created_at:，pid:, }
+					if(r) {
+						var data = {
+							data :{id:r.id, name:r.name, content:r.content, pid:this.form.pid, created_at:r.created_at},
+							children:[]
+						}
+						if(this.form.pid == 0) {
+							//comment article direct
+							let length = this.list.length 
+							this.$set(this.list,length,data)
+						} else {
+							for(let p in this.list) {
+								let length = this.list[p]['children'].length
+								//replay the comment of article
+								if(this.list[p]['data']['id'] == this.form.pid) {
+									this.$set(this.list[p]['children'],length,data)
+									break;
+								}
+								//replay the comment of comment
+								if(this.list[p]['children'].length > 0) {
+									for (let q in this.list[p]['children']) {
+										if(this.list[p]['children'][q]['data']['id'] == this.form.pid) {
+											this.$set(this.list[p]['children'],length,data)
+											break
+										}
+									}
+								}
+							}
+							this.cancle()
+							
+						}
+						this.cleanContent()
+					}
+				})
 			},
 			showEmojiPanel() {
 				this.isShowEmojiPanel = !this.isShowEmojiPanel;
@@ -238,23 +267,34 @@
 					localStorage.setItem('comment_email',this.form.email)
 				}
 			},
-			clickReplay(id) {
+			Replay(row) {
+				var id = row.item.data.id
 				this.form.pid = parseInt(id)
 				var id = '#replay_' + this.form.pid
 				$('#replay').appendTo($(id))
-				$("html,body").animate({scrollTop: $("#replay").offset().top - "100" + "px"}, 400);
+				$("html,body").animate({scrollTop: $("#replay").offset().top - "130" + "px"}, 400);
+				$('#textpanel').focus()
 			},
-			clickReport(id) {
-				this.$emit('clickReport',id)
+			clickReport(row,car) {
+				this.$emit('clickReport',row, r => {
+					car(r)
+				})
 			},
-			clickUnlike(id) {
-				this.$emit('clickUnlike',id)
+			clickUnlike(row,car) {
+				this.$emit('clickUnlike',row, r => {
+					car(r)
+				})
 			},
-			clickLike(id) {
-				this.$emit('clickLike',id)
+			clickLike(row,car) {
+				this.$emit('clickLike',row, r => {
+					car(r)
+				})
 			},
 		},
-		mounted(){
+		updated(){
+			
+		},
+		created(){
 			//get comment info
 			var save = localStorage.getItem('comment_save')
 			if(save) {
