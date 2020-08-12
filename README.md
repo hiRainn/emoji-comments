@@ -6,7 +6,7 @@ dependencies :{
 	"ant-design-vue": "^1.6.4",
 }
 
-该组件轻度依赖上述依赖，如果需要修改，则 <a href="#change">点击此处<.a>
+该组件轻度依赖上述依赖，如果需要修改，则 <a href="#change">点击此处</a>
 
 
 ##### 属性 
@@ -42,6 +42,7 @@ dependencies :{
 submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),name:form.name,created_at:created_at})
 
 |方法名称|作用|参数|参数含义|
+|-|-|-|-|
 |clickReport|举报|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickLike|点赞|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickUnlike|踩|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
