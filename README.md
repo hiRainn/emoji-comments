@@ -37,7 +37,7 @@ dependencies :{
 
 ##### 方法 
 
-所有方法除submit外均需要回调布尔值，回调true则继续执行下一步操作，不会使用回调的话，请看例子demo.vue,会简化到只包含调用的4个方法
+所有方法除submit外均需要回调布尔值，回调true则继续执行下一步操作，不会使用回调的话，请看例子[demo.vue](https://github.com/hiRainn/emoji-comments/blob/master/src/demo.vue),会简化到只包含调用的4个方法
 
 submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),name:form.name,created_at:created_at})
 
