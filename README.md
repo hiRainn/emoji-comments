@@ -83,9 +83,12 @@ list:[
 			id:int,  //必要，代表评论id
 			name:string, //必要，代表回复人名称，为空则显示为AnonymousText
 			content:string,//必要 代表回复内容
-			pid:int, //必要  代表回复父id
-			created_at:int|string, //必要 回复时间
-			is_admin:int|boolean, //判断是否为作者(管理员)
+			pid:int,  //必要  代表回复父id
+			created_at:int|string,  //必要 回复时间
+			is_admin:int|boolean,  //判断是否为作者(管理员)
+			like:int|boolean ,//表示当前用户是否已经点赞过这条评论，获取为clickLike中row.data.like
+			unlike:int|boolean, //表示当前用户是否已经点踩过这条评论，获取为clickUnlike中row.data.unlike
+			report:int|boolean //表示当前用户是否举报过这条评论，获取为clickReport中row.data.report
 		},
 		children:[list]
 	},
