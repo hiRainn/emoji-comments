@@ -3,7 +3,7 @@
 		<a-row class="row-comment-list">
 			<a-col :xs="0" :md="24">
 				<!-- v-if for async  -->
-				<div class="title" >{{title}}</div>
+				<div class="comment-title" >{{title}}</div>
 				<comment-list v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
 				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickLike="clickLike"
 				 :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
@@ -12,7 +12,7 @@
 				 :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
-				<div class="title">{{title}}</div>
+				<div class="comment-title">{{title}}</div>
 				<comment-list-phone ref="phoneComment" v-if="list.length > 0" @PhoneReplay="PhoneReplay" @clickReport="clickReport" @cancleReport="cancleReport"
 				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment" :showReport="showReport"
@@ -435,7 +435,7 @@
 <style lang="scss">
 	// 注意 这里因为v-html的原因 不能使用scoped 不然样式不能失效
 	
-	.title{
+	.comment-title{
 		border-bottom: 2px solid #1F2D3D;
 		padding-right: 10px;
 		font-size: 18px;
