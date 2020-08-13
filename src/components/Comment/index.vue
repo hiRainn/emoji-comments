@@ -3,6 +3,7 @@
 		<a-row class="row-comment-list">
 			<a-col :xs="0" :md="24">
 				<!-- v-if for async  -->
+				<div class="title" >{{title}}</div>
 				<comment-list v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
 				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickLike="clickLike"
 				 :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
@@ -11,6 +12,7 @@
 				 :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
+				<div class="title">{{title}}</div>
 				<comment-list-phone ref="phoneComment" v-if="list.length > 0" @PhoneReplay="PhoneReplay" @clickReport="clickReport" @cancleReport="cancleReport"
 				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment" :showReport="showReport"
@@ -63,11 +65,14 @@
 		</a-row>
 
 		<a-drawer :closable="false" height="auto" :visible="visible" placement="bottom" @close="onClose">
-			<slot name="title">
-				{{replayText}}&nbsp;
-				<a-icon type="caret-right" />&nbsp;{{replayTo}}&nbsp;
-				<span v-if="isAdmin" :style="{color:AdminTagColor}">({{AdminText}})</span>
-			</slot>
+			<template slot="title">
+				<slot name="title">
+					{{replayText}}&nbsp;
+					<a-icon type="caret-right" />&nbsp;{{replayTo}}&nbsp;
+					<span v-if="isAdmin" :style="{color:AdminTagColor}">({{AdminText}})</span>
+				</slot>
+			</template>
+			
 
 			<a-form :label-position="label_position" label-width="80px">
 				<a-row style="margin-bottom: 10px;">
@@ -79,7 +84,7 @@
 
 				<a-form-item>
 					<a-row>
-						<a-input type="textarea" id="textpanel" rows="3" v-model="form.content"></a-input>
+						<a-input type="textarea" id="textpanel_phone" rows="3" v-model="form.content"></a-input>
 						<!-- <a-input type="textarea" class="comment-input" placeholder="" id="textpanel" v-model="content"></a-input> -->
 						<div class="opration">
 							<div class="emoji-panel-btn" @click="showEmojiPanel">
@@ -118,6 +123,10 @@
 			list: {
 				type: Array,
 				default: []
+			},
+			title:{
+				type:String,
+				default:''
 			},
 			AdminText: {
 				type: String,
@@ -371,6 +380,7 @@
 					this.isAdmin = true;
 				}
 				this.visible = true;
+				$('#textpanel_phone').focus()
 
 			},
 			onClose() {
@@ -409,7 +419,7 @@
 			},
 		},
 		updated() {
-
+			
 		},
 		created() {
 			//get comment info
@@ -424,12 +434,21 @@
 </script>
 <style lang="scss">
 	// 注意 这里因为v-html的原因 不能使用scoped 不然样式不能失效
+	
+	.title{
+		border-bottom: 2px solid #1F2D3D;
+		padding-right: 10px;
+		font-size: 18px;
+	}
 	.row-comment-list {
 		text-align: left;
 	}
 
 	.comment-area {
+		margin-top: 10px;
+		border: 1px dotted #eee;
 		text-align: left;
+		padding: 5px;
 	}
 
 	.comment-wrap {

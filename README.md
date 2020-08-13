@@ -29,6 +29,7 @@ dependencies :{
 	:showName="true" 
 	:showEmail="true"
 	:replayText="'回复'" 
+	:title="comment_number?('当前共 ' + comment_number + ' 条评论'):'当前还没有评论，快来评论第一条吧~'"
 	:list="comment_list" 
 	/>
 ```
@@ -61,6 +62,7 @@ export default {
 |属性名称|内容|类型|默认值|
 |-|-|-|-|
 |list|评论列表|Array|[]|
+|title|评论区标题|String|'',ps:一般传入类似'总共xx条评论'|
 |AdminText|作者标注名称|String|'author'|
 |AdminTagColor|作者标示的颜色，可以是16进制数，也可以是颜色单词|String|'8CC5FF'|
 |AnonymousText|未填写姓名时匿名名称|String|'匿名用户'|
