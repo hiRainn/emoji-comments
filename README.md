@@ -107,7 +107,7 @@ list:[
 ]
 ```
 
-*在显示上才用的是层级递归，所以即使有无限级children，也可以显示，但是不建议这么做，因为层层右移，所以当级数过多会导致页面样式出现不可控的混乱*
+*在显示上采用的是层级递归，所以即使有无限级children，也可以显示，但是不建议这么做，因为层层右移，所以当级数过多会导致页面样式出现不可控的混乱*
 
 ### 方法 
 
@@ -133,12 +133,13 @@ submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),na
 
 ##### 改组件依赖ant-design-vue 与 jquery，如需使用element或其他组件，改动不大，改动如下：
 
-###### ant 需要修改的属性
+### antDV 需要修改的属性
 
 1. a-col用于适配手机与pc评论列表页的响应式样式，修改span即可
 2. 子组件中点赞与踩的icon，a-icon
 3. 表单a-form
 
-###### jquery 需要修改的属性
+#### jquery 需要修改的属性
 
 1. 点击回复时的回复窗口定位以及滚动动画效果，位于index.vue中
+2. commentList与commentListPhone点赞以及踩的动画效果需要删除
