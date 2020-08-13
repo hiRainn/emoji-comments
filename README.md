@@ -45,6 +45,8 @@ export default {
 ![](https://oscimg.oschina.net/oscnet/up-7060375dbfbe2e163abf18cad0ab6706ce3.png)
 ![](https://oscimg.oschina.net/oscnet/up-cace07e39075052db760e1521d39c5feca1.png)
 ![](https://oscimg.oschina.net/oscnet/up-c40aec8c857181d358001911ace9cdb3f23.png)
+![](https://oscimg.oschina.net/oscnet/up-5d447ad5e31e43465cfb038e4346de6a422.png)
+![](https://oscimg.oschina.net/oscnet/up-440e24d5ec66240f435b63639e17fca5574.png)
 
 表单的姓名于与邮箱可以隐藏，通过设置showName与showEmail为false，即不获取这两个属性
 
@@ -138,6 +140,7 @@ submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),na
 1. a-col用于适配手机与pc评论列表页的响应式样式，修改span即可
 2. 子组件中点赞与踩的icon，a-icon
 3. 表单a-form
+4. CommentListPhone组件中抽屉
 
 #### jquery 需要修改的属性
 

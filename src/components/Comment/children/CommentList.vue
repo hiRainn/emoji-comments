@@ -13,6 +13,7 @@
 							<a-col :span="20">
 								<span class="comments-list-item-username">{{item.data.name || AnonymousText}}</span>
 								<span :style="{color:AdminTagColor}" v-if="item.data.is_admin">&nbsp;({{AdminText}})</span>
+								<span style="margin: 0px 5px;color: #1890FF;" v-if="getReplayName(item.data.pid) != ''">{{replayText}}</span>
 								<span> {{getReplayName(item.data.pid)}}</span>
 								<span v-if="getAdminTag(item.data.pid)" :style="{color:AdminTagColor}">&nbsp;({{AdminText}})</span>
 							</a-col>
@@ -312,7 +313,7 @@
 					if (pid === 0 || this.replayName[pid] == undefined) {
 						return ''
 					} else {
-						return '@ ' + this.replayName[pid]
+						return this.replayName[pid]
 					}
 				}
 			},
@@ -433,6 +434,18 @@
 
 	.item-child {
 		margin-left: 50px;
+		
+		div.comments-list-item:last-child{
+			margin-bottom: 0px;
+			border-bottom: none;
+		}
+		
+		div.comments-list-item:first-child{
+			margin-top: 0px;
+			margin-bottom: 10px;
+			padding-top: 10px;
+			border-top: 1px dotted #eee;
+		}
 	}
 
 	.comments-list-item {

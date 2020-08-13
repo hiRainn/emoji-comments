@@ -4,17 +4,18 @@
 			<a-col :xs="0" :md="24">
 				<!-- v-if for async  -->
 				<comment-list v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
-				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike"  @clickLike="clickLike" :comments="list" :showLike="showLike" :showUnlike="showUnlike"
-				 :showReplay="showReplay && allowComment" :showReport="showReport" :showEmail="showEmail" :showName="showName"
-				 :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor" :repeatType="repeatType"
-				 :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
+				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickLike="clickLike"
+				 :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
+				 :showReport="showReport" :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor"
+				 :unlikeColor="unlikeColor" :repeatType="repeatType" :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText"
+				 :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
-				<comment-list-phone v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @cancleReport="cancleReport"
-				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list" :showLike="showLike" :showUnlike="showUnlike"
-				 :showReplay="showReplay && allowComment" :showReport="showReport" :showEmail="showEmail" :showName="showName"
-				 :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor" :repeatType="repeatType"
-				 :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminTagColor="AdminTagColor" />
+				<comment-list-phone v-if="list.length > 0" @PhoneReplay="PhoneReplay" @clickReport="clickReport" @cancleReport="cancleReport"
+				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list"
+				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment" :showReport="showReport"
+				 :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor"
+				 :repeatType="repeatType" :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 		</a-row>
 
@@ -27,7 +28,6 @@
 						<a-input v-model="form.name" @change="changesave"></a-input>
 					</a-form-item>
 					<a-form-item v-if="showEmail" :label="emailText">
-
 						<a-input v-model="form.email" @change="changesave"></a-input>
 					</a-form-item>
 
@@ -60,6 +60,52 @@
 			</a-row>
 
 		</a-row>
+
+		<a-drawer :closable="false" height="auto"  :visible="visible" placement="bottom" @close="onClose">
+			<temple slot="title">
+				<slot name="title">
+					{{replayText}}&nbsp;<a-icon type="caret-right" />&nbsp;{{replayTo}}&nbsp;
+					<span v-if="isAdmin" :style="{color:AdminTagColor}">({{AdminText}})</span>
+				</slot>
+			</temple>
+			
+			<a-form :label-position="label_position" label-width="80px">
+				<a-row style="margin-bottom: 10px;">
+					<a-input v-if="showName" v-model="form.name" :placeholder="nameText" @change="changesave"></a-input>
+				</a-row>
+				<a-row style="margin-bottom: 10px;">
+					<a-input v-if="showEmail" v-model="form.email" :placeholder="emailText" @change="changesave"></a-input>
+				</a-row>
+			
+				<a-form-item>
+					<a-row>
+						<a-input type="textarea" id="textpanel" rows="3" v-model="form.content"></a-input>
+						<!-- <a-input type="textarea" class="comment-input" placeholder="" id="textpanel" v-model="content"></a-input> -->
+						<div class="opration">
+							<div class="emoji-panel-btn" @click="showEmojiPanel">
+								<img style="height: 24px;width: 24px;" src="./assets/img/face_logo.png" />
+							</div>
+							<a-row>
+								<emoji-panel @emojiClick="appendEmoji" v-if="isShowEmojiPanel"></emoji-panel>
+							</a-row>
+						</div>
+					</a-row>
+					<a-row>
+						<a-checkbox v-model="save" @change="setLocal">{{saveText}}</a-checkbox>
+					</a-row>
+					<a-row  class="drawer-button">
+						<a-button @click="saveComment" round size="small"  :disabled="form.content.trim() == ''">{{buttonText}}</a-button>
+					</a-row>
+					<a-row class="drawer-button">
+						<a-button @click="cancle" round size="small"  v-if="form.pid != 0"
+						 :hidden="!form.pid ">{{cancleText}}</a-button>
+					</a-row>
+			
+					
+				</a-form-item>
+				
+			</a-form>
+		</a-drawer>
 
 	</div>
 </template>
@@ -173,7 +219,10 @@
 		},
 		data() {
 			return {
+				replayTo:'',
+				visible: false,
 				save: false,
+				isAdmin:false,
 				label_position: 'top',
 				form: {
 					pid: 0,
@@ -195,6 +244,7 @@
 		methods: {
 
 			cancle() {
+				this.visible = false
 				this.form.pid = 0;
 				$('#replay').insertAfter($('#areplay'))
 			},
@@ -214,6 +264,7 @@
 				this.$emit('submit', this.form, r => {
 					//update list   r =  { id:, content:, name:,   created_at:，pid:, }
 					if (r) {
+						this.visible = false
 						var data = {
 							data: {
 								id: r.id,
@@ -291,6 +342,24 @@
 				}, 400);
 				$('#textpanel').focus()
 			},
+			PhoneReplay(row) {
+				this.isAdmin = false;
+				var id = row.item.data.id
+				this.form.pid = parseInt(id)
+				this.replayTo = row.item.data.name
+				if(this.replayTo == '') {
+					this.replayTo = this.AnonymousText
+				}
+				if(row.item.data.is_admin) {
+					this.isAdmin = true;
+				}
+				this.visible = true;
+				
+			},
+			onClose() {
+				this.form.pid = 0
+				this.visible = false;
+			},
 			clickReport(row, car) {
 				this.$emit('clickReport', row, r => {
 					car(r)
@@ -366,11 +435,12 @@
 			margin: 2px;
 		}
 
+
 		.comments-list {
-			margin-top: 20px;
+			padding-top: 10px;
 
 			.comments-list-item {
-				margin-bottom: 20px;
+				margin-bottom: 10px;
 
 				.comments-list-item-heading {
 					img {
@@ -389,12 +459,34 @@
 				}
 
 				.comments-list-item-heading-phone {
+					.phone-img {
+						img {
+							height: 19px;
+							width: 19px;
+							margin-right: 10px;
+							border-radius: 50%;
+							vertical-align: text-top;
+						}
+					}
+
 					img {
-						height: 20px;
-						width: 20px;
+						height: 26px;
+						width: 26px;
 						margin-right: 15px;
 						border-radius: 50%;
 						vertical-align: text-top;
+					}
+				}
+
+				.comments-list-item-content-phone {
+					margin: 5px 0px;
+
+					&:last-child {
+						border-bottom: 0;
+					}
+
+					span {
+						vertical-align: top;
 					}
 				}
 
@@ -414,7 +506,6 @@
 
 		.comment-input {
 			height: 100px;
-			width: 500px;
 			border: 1px solid #cccccc;
 			border-radius: 5px;
 			padding: 10px;
@@ -444,6 +535,13 @@
 				}
 			}
 		}
+	}
+	
+	.drawer-button > button {
+		display: block;
+		width:100%;
+		height: 30px;
+		margin-bottom: 15px;
 	}
 
 	@import "./assets/css/emoji.css"; // 导入精灵图样式
