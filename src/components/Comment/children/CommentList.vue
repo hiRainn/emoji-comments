@@ -24,22 +24,24 @@
 							<div class="comments-list-item-content" v-html="item.data.content"></div>
 						</a-row>
 						<a-row class="comment-under">
-							<span  class="replay_pc" v-if="showReplay && item.data.id">
+							<span class="replay_pc" v-if="showReplay && item.data.id">
 								<span @click="Replay({item:item,index:index})">
 									{{replayText}}
 								</span>
 							</span>
-							
-							<span class="replay_pc" :data="item.data.id"  v-if="showUnlike && item.data.id">
-								<span @click="UnLike({item:item,index:index})"><a-icon :theme="item.data.unlike?'filled':'outlined'" :style="{color:unlikeColor}" type="dislike" /></span>
-								{{getItemUnlikeNumber(item)}}
+
+							<span class="replay_pc" :data="item.data.id" v-if="showUnlike && item.data.id">
+								<span @click="UnLike({item:item,index:index})">
+									<a-icon :theme="item.data.unlike?'filled':'outlined'" :style="{color:unlikeColor}" type="dislike" /></span>
+								<span :id="'unlike_'+ item.data.id">{{getItemUnlikeNumber(item)}}</span>
 							</span>
-							<span class="replay_pc" :data="item.data.id"  v-if="showLike && item.data.id">
-								<span @click="Like({item:item,index:index})"><a-icon :theme="item.data.like?'filled':'outlined'" :style="{color:likeColor}" type="like" /> </span>
-								{{getItemLikeNumber(item)}}
+							<span class="replay_pc" :data="item.data.id" v-if="showLike && item.data.id">
+								<span @click="Like({item:item,index:index})">
+									<a-icon :theme="item.data.like?'filled':'outlined'" :style="{color:likeColor}" type="like" /> </span>
+								<span :id="'like_'+ item.data.id">{{getItemLikeNumber(item)}}</span>
 							</span>
-	
-							<span class="replay_pc" :data="item.data.id"  v-if="showReport && item.data.id">
+
+							<span class="replay_pc" :data="item.data.id" v-if="showReport && item.data.id">
 								<span @click="Report({item:item,index:index})" :style="{color:item.data.report?likeColor:'black'}">
 									{{reportText}}
 								</span>
@@ -51,37 +53,26 @@
 
 			<a :id="'replay_'+item.data.id"></a>
 			<div class="item-child" v-if="item.children.length > 0">
-				<list 
-				@Replay="Replay"
-				@clickReport="clickReport" 
-				@clickUnlike="clickUnlike" 
-				@clickLike="clickLike" 
-				:AdminText="AdminText"
-				:AdminTagColor="AdminTagColor"
-				:AnonymousText="AnonymousText"
-				:replayText="replayText" 
-				:reportText="reportText" 
-				:showLike="showLike"
-				:showUnlike="showUnlike"
-				:showReplay="showReplay"
-				:showReport="showReport"
-				:likeColor="likeColor"
-				:unlikeColor="unlikeColor"
-				:comments="item.children" />
+				<list @Replay="Replay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport"
+				 @cancleReport="cancleReport" @clickUnlike="clickUnlike" @clickLike="clickLike" :AdminText="AdminText"
+				 :AdminTagColor="AdminTagColor" :AnonymousText="AnonymousText" :replayText="replayText" :reportText="reportText"
+				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay" :showReport="showReport" :likeColor="likeColor"
+				 :unlikeColor="unlikeColor" :repeatType="repeatType" :AnimateOn="AnimateOn" :comments="item.children" />
 			</div>
 		</a-row>
 	</div>
 </template>
 
 <script>
+	import $ from 'jquery'
 	export default {
 		name: 'List',
 		props: {
-			AdminText:{
+			AdminText: {
 				type: String,
 				default: 'author'
 			},
-			AnonymousText:{
+			AnonymousText: {
 				type: String,
 				default: '匿名用户'
 			},
@@ -109,17 +100,25 @@
 				type: Boolean,
 				default: true
 			},
-			likeColor:{
+			likeColor: {
 				type: String,
-				default: 'red',//mixed
+				default: 'red', //mixed
 			},
-			unlikeColor:{
+			unlikeColor: {
 				type: String,
-				default: 'gray',//mixed
+				default: 'gray', //mixed
 			},
-			AdminTagColor:{
+			AdminTagColor: {
 				type: String,
-				default: '#8CC5FF',//mixed
+				default: '#8CC5FF', //mixed
+			},
+			AnimateOn: {
+				type: Boolean,
+				default: true
+			},
+			repeatType: {
+				type: String,
+				default: 'prevent' //prevent and cancle
 			},
 			comments: {
 				type: Array,
@@ -128,8 +127,8 @@
 		},
 		data() {
 			return {
-				replayName:[],
-				adminPid:[],
+				replayName: [],
+				adminPid: [],
 			}
 		},
 		methods: {
@@ -139,68 +138,150 @@
 				return `<span class="emoji-item-common emoji-${type} emoji-size-small" ></span>`;
 			},
 			Replay(row) {
-				this.$emit('Replay',row )
+				this.$emit('Replay', row)
 			},
 			Report(row) {
-				if(typeof(row.item.data.report) != 'undefined') {
-					if(row.item.data.report == 1) {
+				if (typeof(row.item.data.report) == 'undefined') {
+					row.item.data.report = 0
+				}
+				if (row.item.data.report == 0) {
+					this.$emit('clickReport', row.item.data, r => {
+						if (r) {
+							row.item.data.report = 1
+							this.$set(this.comments, row.index, row.item)
+						}
+					})
+				} else {
+					if (this.repeatType == 'cancle') {
+						this.$emit('cancleReport', row.item.data, r => {
+							if (r) {
+								row.item.data.report = 0
+								this.$set(this.comments, row.index, row.item)
+							}
+						})
+					} else {
+						//默认阻止
 						return false
 					}
 				}
-				this.$emit('clickReport',row.item.data, r=> {
-					if(r) {
-						row.item.data.report = 1
-						this.$set(this.comments,row.index,row.item)
-					} 
+			},
+			clickReport(row, car) {
+				this.$emit('clickReport', row, r => {
+					car(r)
 				})
 			},
-			clickReport(row,car) {
-				this.$emit('clickReport',row ,r => {
+			cancleReport(row, car) {
+				this.$emit('cancleReport', row, r => {
 					car(r)
 				})
 			},
 			Like(row) {
-				this.$emit('clickLike',row.item.data, r=> {
-					if(r) {
-						row.item.data.like_number++
-						row.item.data.like = 1
-						this.$set(this.comments,row.index,row.item)
-					} 
+				if (typeof(row.item.data.like) == 'undefined') {
+					row.item.data.like = 0
+				}
+				if(row.item.data.like == 0) {
+					this.$emit('clickLike', row.item.data, r => {
+						var id = row.item.data.id
+						var color = this.likeColor
+						if (r) {
+							if (this.AnimateOn) {
+								$.tipsBox({
+									obj: $('#like_' + id),
+									str: "+1",
+									color: color,
+								});
+							}
+							row.item.data.like_number++
+							row.item.data.like = 1
+							this.$set(this.comments, row.index, row.item)
+						}
+					})
+				} else {
+					if (this.repeatType == 'cancle') {
+						this.$emit('cancleLike', row.item.data, r => {
+							if (r) {
+								row.item.data.like= 0
+								row.item.data.like_number--
+								this.$set(this.comments, row.index, row.item)
+							}
+						})
+					} else {
+						//默认阻止
+						return false
+					}
+				}
+				
+			},
+			clickLike(row, car) {
+				this.$emit('clickLike', row, r => {
+					car(r)
 				})
 			},
-			clickLike(row,car) {
-				this.$emit('clickLike',row, r => {
+			cancleLike(row, car) {
+				this.$emit('cancleLike', row, r => {
 					car(r)
 				})
 			},
 			UnLike(row) {
-				this.$emit('clickUnlike',row.item.data, r=> {
-					if(r) {
-						row.item.data.unlike_number++
-						row.item.data.unlike = 1
-						this.$set(this.comments,row.index,row.item)
-					} 
-				})
+				if (typeof(row.item.data.unlike) == 'undefined') {
+					row.item.data.unlike = 0
+				}
+				if(row.item.data.unlike == 0) {
+					this.$emit('clickLike', row.item.data, r => {
+						var id = row.item.data.id
+						var color = this.unlikeColor
+						if (r) {
+							if (this.AnimateOn) {
+								$.tipsBox({
+									obj: $('#unlike_' + id),
+									str: "+1",
+									color: color,
+								});
+							}
+							row.item.data.unlike_number++
+							row.item.data.unlike = 1
+							this.$set(this.comments, row.index, row.item)
+						}
+					})
+				} else {
+					if (this.repeatType == 'cancle') {
+						this.$emit('cancleLike', row.item.data, r => {
+							if (r) {
+								row.item.data.unlike= 0
+								row.item.data.unlike_number--
+								this.$set(this.comments, row.index, row.item)
+							}
+						})
+					} else {
+						//默认阻止
+						return false
+					}
+				}
 			},
-			clickUnlike(row,car) {
-				this.$emit('clickUnlike',row, r => {
+			clickUnlike(row, car) {
+				this.$emit('clickUnlike', row, r => {
 					car(r)
 				})
 			},
-			
+			cancleUnlike(row, car) {
+				this.$emit('cancleUnlike', row, r => {
+					car(r)
+				})
+			},
+
 		},
-		computed:{
+		computed: {
 			getItemLikeNumber() {
 				return function(item) {
-					if(typeof(item.data.like_number) == 'undefined') {
+					if (typeof(item.data.like_number) == 'undefined') {
 						item.data.like_number = 0
 					} else if (typeof(item.data.like_number) == 'number') {
-						if(isNaN(item.data.like_number)) {
+						if (isNaN(item.data.like_number)) {
 							item.data.like_number = 0
 						}
 					} else {
 						let res = parseInt(item.data.like_number);
-						if(isNaN(res)) {
+						if (isNaN(res)) {
 							res = 0
 						}
 						item.data.like_number = res
@@ -210,15 +291,15 @@
 			},
 			getItemUnlikeNumber() {
 				return function(item) {
-					if(typeof(item.data.unlike_number) == 'undefined') {
+					if (typeof(item.data.unlike_number) == 'undefined') {
 						item.data.unlike_number = 0
 					} else if (typeof(item.data.unlike_number) == 'number') {
-						if(isNaN(item.data.unlike_number)) {
+						if (isNaN(item.data.unlike_number)) {
 							item.data.unlike_number = 0
 						}
 					} else {
 						let res = parseInt(item.data.unlike_number);
-						if(isNaN(res)) {
+						if (isNaN(res)) {
 							res = 0
 						}
 						item.data.unlike_number = res
@@ -228,7 +309,7 @@
 			},
 			getReplayName() {
 				return function(pid) {
-					if(pid === 0 || this.replayName[pid] == undefined) {
+					if (pid === 0 || this.replayName[pid] == undefined) {
 						return ''
 					} else {
 						return '@ ' + this.replayName[pid]
@@ -263,12 +344,52 @@
 				this.comments[p]['data']['name'] = this.comments[p]['data']['name']
 				this.comments[p]['data']['content'] = this.comments[p]['data']['content'].replace(/:.*?:/g, this.emoji);
 				this.replayName[this.comments[p]['data']['id']] = this.comments[p]['data']['name']
-				if(this.comments[p]['data']['is_admin']) {
+				if (this.comments[p]['data']['is_admin']) {
 					this.adminPid.push(this.comments[p]['data']['id'])
 				}
 			}
+
 		},
 	};
+
+	(function($) {
+		$.extend({
+			tipsBox: function(options) {
+				options = $.extend({
+					obj: null, //jq对象，要在那个html标签上显示
+					str: "+1", //字符串，要显示的内容;也可以传一段html，如: "<b style='font-family:Microsoft YaHei;'>+1</b>"
+					startSize: "12px", //动画开始的文字大小
+					endSize: "30px", //动画结束的文字大小
+					interval: 600, //动画时间间隔
+					color: "#cd4450", //文字颜色
+					weight: "bold", //文字
+					callback: function() {} //回调函数
+				}, options);
+				$("body").append("<span class='num'>" + options.str + "</span>");
+				var box = $(".num");
+				var left = options.obj.offset().left + options.obj.width() / 2;
+				var top = options.obj.offset().top - options.obj.height();
+				box.css({
+					"position": "absolute",
+					"left": left + "px",
+					"top": top + "px",
+					"z-index": 9999,
+					"font-size": options.startSize,
+					"line-height": options.endSize,
+					"color": options.color,
+					"font-weight": options.weight
+				});
+				box.animate({
+					"font-size": options.endSize,
+					"opacity": "0",
+					"top": top - parseInt(options.endSize) + "px"
+				}, options.interval, function() {
+					box.remove();
+					options.callback();
+				});
+			}
+		});
+	})($);
 </script>
 <style lang="scss">
 	.emoji-item-common {
@@ -279,16 +400,16 @@
 			cursor: pointer;
 		}
 	}
-	
-	.replay_pc{
+
+	.replay_pc {
 		float: right;
 		margin-left: 30px;
-		
-		span:hover{
+
+		span:hover {
 			cursor: pointer;
 		}
 	}
-	
+
 
 
 	.time {
@@ -317,6 +438,4 @@
 	.comments-list-item {
 		border-bottom: 1px dotted #eee;
 	}
-	
-	
 </style>

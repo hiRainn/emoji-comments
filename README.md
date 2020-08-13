@@ -11,11 +11,15 @@ dependencies :{
 ### 使用
 
 ```vue
-	<comment /
+	<comment 
 	@submit="comment"
 	@clickUnlike="clickUnlike" 
 	@clickLike="clickLike" 
 	@clickReport="clickReport"
+	@cancleReport="cancleReport"
+	@cancleLike="cancleLike"
+	@cancleUnlike="cancleUnlike"
+	repeatType="cancle"
 	:allowComment="Boolean(article.allow_comment)"
 	:showReport="true"
 	:reportText="'举报'" 
@@ -23,7 +27,7 @@ dependencies :{
 	:showEmail="true"
 	:replayText="'回复'" 
 	:list="comment_list" 
-	>
+	/>
 ```
 
 ```vue
@@ -37,6 +41,7 @@ export default {
 ```
 
 ![](https://oscimg.oschina.net/oscnet/up-ce86ea6454df8cb4f566445af0e02fff2e2.png)
+![](https://oscimg.oschina.net/oscnet/up-0b3d1868ebe59f5fc3173a4f1dfec37497b.png)
 ![](https://oscimg.oschina.net/oscnet/up-7060375dbfbe2e163abf18cad0ab6706ce3.png)
 ![](https://oscimg.oschina.net/oscnet/up-cace07e39075052db760e1521d39c5feca1.png)
 ![](https://oscimg.oschina.net/oscnet/up-c40aec8c857181d358001911ace9cdb3f23.png)
@@ -50,6 +55,7 @@ export default {
 |-|-|-|-|
 |list|评论列表|Array|[]|
 |AdminText|作者标注名称|String|'author'|
+|AdminTagColor|作者标示的颜色，可以是16进制数，也可以是颜色单词|String|'8CC5FF'|
 |AnonymousText|未填写姓名时匿名名称|String|'匿名用户'|
 |tipText|评论表单区提示文字|String|'你的邮箱不会显示，姓名与邮箱将作为唯一的key以便获取回复信息，建议勾选保存在浏览器中'|
 |nameText|姓名|String|'姓名'|
@@ -68,9 +74,12 @@ export default {
 |showEmail|回复表单是否显示emai|Boolean|false|
 |showTip|回复表单是否显示提示|Boolean|false|
 |allowComment|是否允许评论|Boolean|true|
+|AnimateOn|点赞与踩的动画加减一效果是否开启|Boolean|true|
 |likeColor|点赞的颜色，可以是16进制数，也可以是颜色单词|String|'red'|
 |unlikeColor|踩的颜色，可以是16进制数，也可以是颜色单词|String|'gray'|
-|AdminTagColor|作者标示的颜色，可以是16进制数，也可以是颜色单词|String|'8CC5FF'|
+|repeatType|重复点击举报、踩、攒时的处理方式|String，'cancle','prevent'，cancle为取消，prevent则不作任何处理|'prevent'|
+
+
 
 ### 数据结构
 
@@ -85,6 +94,8 @@ list:[
 			content:string,//必要 代表回复内容
 			pid:int,  //必要  代表回复父id
 			created_at:int|string,  //必要 回复时间
+			like_number:int, //被点赞数
+			unlike_number:int, //被踩数
 			is_admin:int|boolean,  //判断是否为作者(管理员)
 			like:int|boolean ,//表示当前用户是否已经点赞过这条评论，获取为clickLike中row.data.like
 			unlike:int|boolean, //表示当前用户是否已经点踩过这条评论，获取为clickUnlike中row.data.unlike
@@ -111,6 +122,9 @@ submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),na
 |clickReport|举报|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickLike|点赞|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickUnlike|踩|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
+|canclekReport|取消举报|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
+|cancleLike|取消点赞|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
+|cancleUnlike|取消踩|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |submit|提交评论|form，cab|form为表单内容，cab为回调函数|
 
 

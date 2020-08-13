@@ -4,15 +4,17 @@
 			<a-col :xs="0" :md="24">
 				<!-- v-if for async  -->
 				<comment-list v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
-				 @clickLike="clickLike" :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
-				 :showReport="showReport" :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor"
-				 :unlikeColor="unlikeColor" :replayText="replayText" :reportText="reportText" :AdminText="AdminText" :AdminTagColor="AdminTagColor"/>
+				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike"  @clickLike="clickLike" :comments="list" :showLike="showLike" :showUnlike="showUnlike"
+				 :showReplay="showReplay && allowComment" :showReport="showReport" :showEmail="showEmail" :showName="showName"
+				 :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor" :repeatType="repeatType"
+				 :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
-				<comment-list-phone v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
-				 @clickLike="clickLike" :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
-				 :showReport="showReport" :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor"
-				 :unlikeColor="unlikeColor" :replayText="replayText" :reportText="reportText"  :AdminTagColor="AdminTagColor" />
+				<comment-list-phone v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @cancleReport="cancleReport"
+				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list" :showLike="showLike" :showUnlike="showUnlike"
+				 :showReplay="showReplay && allowComment" :showReport="showReport" :showEmail="showEmail" :showName="showName"
+				 :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor" :repeatType="repeatType"
+				 :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 		</a-row>
 
@@ -148,6 +150,10 @@
 				type: Boolean,
 				default: true
 			},
+			AnimateOn: {
+				type: Boolean,
+				default: true
+			},
 			likeColor: {
 				type: String,
 				default: 'red', //mixed
@@ -156,9 +162,13 @@
 				type: String,
 				default: 'gray', //mixed
 			},
-			AdminTagColor:{
+			AdminTagColor: {
 				type: String,
-				default: '#8CC5FF',//mixed
+				default: '#8CC5FF', //mixed
+			},
+			repeatType: {
+				type: String,
+				default: 'prevent' //prevent and cancle
 			},
 		},
 		data() {
@@ -286,13 +296,28 @@
 					car(r)
 				})
 			},
+			cancleReport(row, car) {
+				this.$emit('cancleReport', row, r => {
+					car(r)
+				})
+			},
 			clickUnlike(row, car) {
 				this.$emit('clickUnlike', row, r => {
 					car(r)
 				})
 			},
+			cancleLike(row, car) {
+				this.$emit('cancleLike', row, r => {
+					car(r)
+				})
+			},
 			clickLike(row, car) {
 				this.$emit('clickLike', row, r => {
+					car(r)
+				})
+			},
+			cancleUnlike(row, car) {
+				this.$emit('cancleUnlike', row, r => {
 					car(r)
 				})
 			},
@@ -372,53 +397,54 @@
 						vertical-align: text-top;
 					}
 				}
-					.comments-list-item-content {
-						margin: 10px 0px;
 
-						&:last-child {
-							border-bottom: 0;
-						}
+				.comments-list-item-content {
+					margin: 10px 0px;
 
-						span {
-							vertical-align: top;
-						}
-					}
-				}
-			}
-
-			.comment-input {
-				height: 100px;
-				width: 500px;
-				border: 1px solid #cccccc;
-				border-radius: 5px;
-				padding: 10px;
-				resize: none;
-
-				&:focus {
-					outline: none;
-				}
-			}
-
-			.opration {
-				display: flex;
-				justify-content: space-between;
-				position: relative;
-
-				.emoji-panel-btn {
-					display: inline-block;
-
-					&:hover {
-						cursor: pointer;
-						opacity: 0.8;
+					&:last-child {
+						border-bottom: 0;
 					}
 
-					img {
-						height: 24px;
-						width: 24px;
+					span {
+						vertical-align: top;
 					}
 				}
 			}
 		}
 
-		@import "./assets/css/emoji.css"; // 导入精灵图样式
+		.comment-input {
+			height: 100px;
+			width: 500px;
+			border: 1px solid #cccccc;
+			border-radius: 5px;
+			padding: 10px;
+			resize: none;
+
+			&:focus {
+				outline: none;
+			}
+		}
+
+		.opration {
+			display: flex;
+			justify-content: space-between;
+			position: relative;
+
+			.emoji-panel-btn {
+				display: inline-block;
+
+				&:hover {
+					cursor: pointer;
+					opacity: 0.8;
+				}
+
+				img {
+					height: 24px;
+					width: 24px;
+				}
+			}
+		}
+	}
+
+	@import "./assets/css/emoji.css"; // 导入精灵图样式
 </style>

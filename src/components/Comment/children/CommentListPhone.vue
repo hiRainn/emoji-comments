@@ -5,15 +5,18 @@
 			<div class="comments-list-item-heading-phone">
 				<a-row>
 					<a-col :span="2">
-						<img src="../assets/img/heading.jpg" style="" />
+						<img v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
+						<img v-else src="../assets/img/heading.jpg" style="" />
 					</a-col>
 					<a-col :span="22">
 						<a-row>
-							<a-col :span="20">
+							<a-col :span="17">
 								<span class="comments-list-item-username">{{item.data.name || AnonymousText}}</span>
-								<span >  {{getReplayName(item.data.pid)}}</span>
+								<span :style="{color:AdminTagColor}" v-if="item.data.is_admin">&nbsp;({{AdminText}})</span>
+								<span> {{getReplayName(item.data.pid)}}</span>
+								<span v-if="getAdminTag(item.data.pid)" :style="{color:AdminTagColor}">&nbsp;({{AdminText}})</span>
 							</a-col>
-							<a-col :span="4">
+							<a-col :span="7">
 								<span class="time">{{item.data.created_at || ''}}</span>
 							</a-col>
 						</a-row>
@@ -53,6 +56,8 @@
 				@clickReport="clickReport" 
 				@clickUnlike="clickUnlike" 
 				@clickLike="clickLike" 
+				:AdminText="AdminText"
+				:AdminTagColor="AdminTagColor"
 				:AnonymousText="AnonymousText"
 				:replayText="replayText" 
 				:reportText="reportText" 
@@ -72,6 +77,10 @@
 	export default {
 		name: 'List',
 		props: {
+			AdminText:{
+				type: String,
+				default: 'author'
+			},
 			AnonymousText:{
 				type: String,
 				default: '匿名用户'
@@ -108,6 +117,10 @@
 				type: String,
 				default: 'gray',//mixed
 			},
+			AdminTagColor:{
+				type: String,
+				default: '#8CC5FF',//mixed
+			},
 			comments: {
 				type: Array,
 				default: []
@@ -115,7 +128,8 @@
 		},
 		data() {
 			return {
-				replayName:[]
+				replayName:[],
+				adminPid:[],
 			}
 		},
 		methods: {
@@ -221,6 +235,16 @@
 					}
 				}
 			},
+			getAdminTag() {
+				return function(pid) {
+					for (let p in this.adminPid) {
+						if (this.adminPid[p] == pid) {
+							return true
+						}
+					}
+					return false
+				}
+			}
 		},
 		//for update new data
 		updated() {
@@ -239,6 +263,9 @@
 				this.comments[p]['data']['name'] = this.comments[p]['data']['name']
 				this.comments[p]['data']['content'] = this.comments[p]['data']['content'].replace(/:.*?:/g, this.emoji);
 				this.replayName[this.comments[p]['data']['id']] = this.comments[p]['data']['name']
+				if(this.comments[p]['data']['is_admin']) {
+					this.adminPid.push(this.comments[p]['data']['id'])
+				}
 			}
 		},
 	};
