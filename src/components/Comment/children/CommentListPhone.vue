@@ -1,8 +1,7 @@
 <template>
 	<div class="comments-list">
-		<a-row class="comments-list-item" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
-			<a :href="'#replay_'+item.data.id"></a>
-			<div class="comments-list-item-heading-phone">
+		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
+			<div  class="comments-list-item-heading-phone">
 				<a-row>
 					<a-col :span="2" :class="{'phone-img':isChildren}">
 						<img  v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
@@ -24,7 +23,7 @@
 							<span class="time">{{item.data.created_at || ''}}</span>
 							
 							<span class="replay_pc" v-if="showReplay && item.data.id">
-								<span @click="PhoneReplay({item:item,index:index})">
+								<span @click="PhoneReplay({item:item,index:index,floor_id:floorId})">
 									{{replayText}}
 								</span>
 							</span>
@@ -50,14 +49,21 @@
 				</a-row>
 			</div>
 
-			<a :id="'replay_'+item.data.id"></a>
 			<div class="item-child" v-if="item.children.length > 0">
-				<list @PhoneReplay="PhoneReplay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport" :isChildren="true"
+				<list :ref="'subcomment_'+item.data.id" :floorId="item.data.id" @PhoneReplay="PhoneReplay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport" :isChildren="true"
 				 @cancleReport="cancleReport" @clickUnlike="clickUnlike" @clickLike="clickLike" :AdminText="AdminText"
 				 :AdminTagColor="AdminTagColor" :AnonymousText="AnonymousText" :replayText="replayText" :reportText="reportText"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay" :showReport="showReport" :likeColor="likeColor"
-				 :unlikeColor="unlikeColor" :repeatType="repeatType" :AnimateOn="AnimateOn" :comments="item.children" />
+				 :unlikeColor="unlikeColor" :HideText="HideText" :ShowText="ShowText" :repeatType="repeatType" :AnimateOn="AnimateOn" :hideNumber="hideNumber" :comments="item.children" />
 			</div>
+			
+			<!-- click wo show all comments -->
+			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren">
+				<span @click="showComments">{{getShowText(comments.length)}}</span>
+			</a-row>
+			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren">
+				<span @click="hideComments">{{HideText}}</span>
+			</a-row>
 		</a-row>
 	</div>
 </template>
@@ -104,6 +110,10 @@
 				type: Boolean,
 				default: true
 			},
+			hideNumber:{
+				type: Number,
+				default: 3, //mixed
+			},
 			likeColor: {
 				type: String,
 				default: 'red', //mixed
@@ -124,18 +134,42 @@
 				type: String,
 				default: 'prevent' //prevent and cancle
 			},
+			ShowText:{
+				type:String,
+				default:'点击查看所有 {Number} 条回复'
+			},
+			HideText:{
+				type:String,
+				default:'点击收起回复'
+			},
 			comments: {
 				type: Array,
 				default: []
+			},
+			//to change refs showSubComments
+			floorId:{
+				type:Number,
+				default:0
 			}
 		},
 		data() {
 			return {
+				showSubComments:false,
 				replayName: [],
 				adminPid: [],
 			}
 		},
 		methods: {
+			showSubReplay(id) {
+				var key = 'subcomment_' + id
+				this.$refs[key][0].showComments()
+			},
+			showComments(){
+				this.showSubComments = true
+			},
+			hideComments(){
+				this.showSubComments = false
+			},
 			emoji(word) {
 				// 生成html
 				const type = word.substring(1, word.length - 1);
@@ -328,6 +362,11 @@
 						}
 					}
 					return false
+				}
+			},
+			getShowText() {
+				return function(length) {
+					return this.ShowText.replace('{Number}',length)
 				}
 			}
 		},

@@ -11,11 +11,12 @@
 				 :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
-				<comment-list-phone v-if="list.length > 0" @PhoneReplay="PhoneReplay" @clickReport="clickReport" @cancleReport="cancleReport"
+				<comment-list-phone ref="phoneComment" v-if="list.length > 0" @PhoneReplay="PhoneReplay" @clickReport="clickReport" @cancleReport="cancleReport"
 				 @clickUnlike="clickUnlike" @clickLike="clickLike" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" :comments="list"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment" :showReport="showReport"
 				 :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor"
-				 :repeatType="repeatType" :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText" :AdminTagColor="AdminTagColor" />
+				 :repeatType="repeatType" :HideText="HideText" :ShowText="ShowText" :AnimateOn="AnimateOn" :replayText="replayText"
+				 :reportText="reportText" :AdminTagColor="AdminTagColor" :hideNumber="hideNumber" />
 			</a-col>
 		</a-row>
 
@@ -61,14 +62,13 @@
 
 		</a-row>
 
-		<a-drawer :closable="false" height="auto"  :visible="visible" placement="bottom" @close="onClose">
-			<temple slot="title">
-				<slot name="title">
-					{{replayText}}&nbsp;<a-icon type="caret-right" />&nbsp;{{replayTo}}&nbsp;
-					<span v-if="isAdmin" :style="{color:AdminTagColor}">({{AdminText}})</span>
-				</slot>
-			</temple>
-			
+		<a-drawer :closable="false" height="auto" :visible="visible" placement="bottom" @close="onClose">
+			<slot name="title">
+				{{replayText}}&nbsp;
+				<a-icon type="caret-right" />&nbsp;{{replayTo}}&nbsp;
+				<span v-if="isAdmin" :style="{color:AdminTagColor}">({{AdminText}})</span>
+			</slot>
+
 			<a-form :label-position="label_position" label-width="80px">
 				<a-row style="margin-bottom: 10px;">
 					<a-input v-if="showName" v-model="form.name" :placeholder="nameText" @change="changesave"></a-input>
@@ -76,7 +76,7 @@
 				<a-row style="margin-bottom: 10px;">
 					<a-input v-if="showEmail" v-model="form.email" :placeholder="emailText" @change="changesave"></a-input>
 				</a-row>
-			
+
 				<a-form-item>
 					<a-row>
 						<a-input type="textarea" id="textpanel" rows="3" v-model="form.content"></a-input>
@@ -93,17 +93,16 @@
 					<a-row>
 						<a-checkbox v-model="save" @change="setLocal">{{saveText}}</a-checkbox>
 					</a-row>
-					<a-row  class="drawer-button">
-						<a-button @click="saveComment" round size="small"  :disabled="form.content.trim() == ''">{{buttonText}}</a-button>
+					<a-row class="drawer-button">
+						<a-button @click="saveComment" round size="small" :disabled="form.content.trim() == ''">{{buttonText}}</a-button>
 					</a-row>
 					<a-row class="drawer-button">
-						<a-button @click="cancle" round size="small"  v-if="form.pid != 0"
-						 :hidden="!form.pid ">{{cancleText}}</a-button>
+						<a-button @click="cancle" round size="small" v-if="form.pid != 0" :hidden="!form.pid ">{{cancleText}}</a-button>
 					</a-row>
-			
-					
+
+
 				</a-form-item>
-				
+
 			</a-form>
 		</a-drawer>
 
@@ -216,13 +215,26 @@
 				type: String,
 				default: 'prevent' //prevent and cancle
 			},
+			hideNumber: {
+				type: Number,
+				default: 3
+			},
+			ShowText:{
+				type:String,
+				default:'点击查看所有{Number}条回复'
+			},
+			HideText:{
+				type:String,
+				default:'点击收起回复'
+			},
 		},
 		data() {
 			return {
-				replayTo:'',
+				floorId:0,
+				replayTo: '',
 				visible: false,
 				save: false,
-				isAdmin:false,
+				isAdmin: false,
 				label_position: 'top',
 				form: {
 					pid: 0,
@@ -244,6 +256,7 @@
 		methods: {
 
 			cancle() {
+				this.floorId = 0;
 				this.visible = false
 				this.form.pid = 0;
 				$('#replay').insertAfter($('#areplay'))
@@ -265,6 +278,9 @@
 					//update list   r =  { id:, content:, name:,   created_at:，pid:, }
 					if (r) {
 						this.visible = false
+						if(this.floorId) {
+							this.$refs['phoneComment'].showSubReplay(this.floorId)
+						}
 						var data = {
 							data: {
 								id: r.id,
@@ -343,18 +359,19 @@
 				$('#textpanel').focus()
 			},
 			PhoneReplay(row) {
+				this.floorId = row.floor_id
 				this.isAdmin = false;
 				var id = row.item.data.id
 				this.form.pid = parseInt(id)
 				this.replayTo = row.item.data.name
-				if(this.replayTo == '') {
+				if (this.replayTo == '') {
 					this.replayTo = this.AnonymousText
 				}
-				if(row.item.data.is_admin) {
+				if (row.item.data.is_admin) {
 					this.isAdmin = true;
 				}
 				this.visible = true;
-				
+
 			},
 			onClose() {
 				this.form.pid = 0
@@ -536,10 +553,10 @@
 			}
 		}
 	}
-	
-	.drawer-button > button {
+
+	.drawer-button>button {
 		display: block;
-		width:100%;
+		width: 100%;
 		height: 30px;
 		margin-bottom: 15px;
 	}

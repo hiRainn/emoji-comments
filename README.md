@@ -19,6 +19,9 @@ dependencies :{
 	@cancleReport="cancleReport"
 	@cancleLike="cancleLike"
 	@cancleUnlike="cancleUnlike"
+	:hideNumber="3"
+	ShowText="点击查看 {Number} 条评论"
+	HideText="收起评论"
 	repeatType="cancle"
 	:allowComment="Boolean(article.allow_comment)"
 	:showReport="true"
@@ -45,8 +48,10 @@ export default {
 ![](https://oscimg.oschina.net/oscnet/up-7060375dbfbe2e163abf18cad0ab6706ce3.png)
 ![](https://oscimg.oschina.net/oscnet/up-cace07e39075052db760e1521d39c5feca1.png)
 ![](https://oscimg.oschina.net/oscnet/up-c40aec8c857181d358001911ace9cdb3f23.png)
-![](https://oscimg.oschina.net/oscnet/up-5d447ad5e31e43465cfb038e4346de6a422.png)
-![](https://oscimg.oschina.net/oscnet/up-440e24d5ec66240f435b63639e17fca5574.png)
+
+![](https://oscimg.oschina.net/oscnet/up-91a72626557cf3b1f65414faf5aa7af2496.png)
+![](https://oscimg.oschina.net/oscnet/up-b086cd061b6baa94822a18cebeb8516f435.png)
+![](https://oscimg.oschina.net/oscnet/up-7365255ebd4f76c200b6de1407ba0643ae7.png)
 
 表单的姓名于与邮箱可以隐藏，通过设置showName与showEmail为false，即不获取这两个属性
 
@@ -62,6 +67,9 @@ export default {
 |tipText|评论表单区提示文字|String|'你的邮箱不会显示，姓名与邮箱将作为唯一的key以便获取回复信息，建议勾选保存在浏览器中'|
 |nameText|姓名|String|'姓名'|
 |emailText|邮箱|String|'邮箱'|
+|hideNumber|手机端子评论超过多少条隐藏|Number|3|
+|ShowText|手机端子评论点击显示文字模板|String|"点击展开全部{Number}条回复"，{Number}为占位符，大小写必须一致，必须|
+|HideText|手机端子评论收起展开回复|Strung|'点击收起回复'|
 |buttonText|提交按钮名称|String|'提交'|
 |cancleText|取消按钮名称|String|'取消'|
 |saveText|保存checkbox文字|String|'保存在浏览器中'|
