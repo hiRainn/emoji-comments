@@ -8,12 +8,48 @@ dependencies :{
 
 该组件轻度依赖上述依赖，如果需要修改，则 <a href="#change">点击此处</a>
 
+### 使用
 
-##### 属性 
+```vue
+	<comment /
+	@submit="comment"
+	@clickUnlike="clickUnlike" 
+	@clickLike="clickLike" 
+	@clickReport="clickReport"
+	:allowComment="Boolean(article.allow_comment)"
+	:showReport="true"
+	:reportText="'举报'" 
+	:showName="true" 
+	:showEmail="true"
+	:replayText="'回复'" 
+	:list="comment_list" 
+	>
+```
+
+```vue
+import Comment from '@/components/Comment'
+export default {
+	components: {
+		Comment,
+	},
+}
+
+```
+
+![](https://oscimg.oschina.net/oscnet/up-ce86ea6454df8cb4f566445af0e02fff2e2.png)
+![](https://oscimg.oschina.net/oscnet/up-7060375dbfbe2e163abf18cad0ab6706ce3.png)
+![](https://oscimg.oschina.net/oscnet/up-cace07e39075052db760e1521d39c5feca1.png)
+![](https://oscimg.oschina.net/oscnet/up-c40aec8c857181d358001911ace9cdb3f23.png)
+
+表单的姓名于与邮箱可以隐藏，通过设置showName与showEmail为false，即不获取这两个属性
+
+
+### 属性 
 
 |属性名称|内容|类型|默认值|
 |-|-|-|-|
 |list|评论列表|Array|[]|
+|AdminText|作者标注名称|String|'author'|
 |AnonymousText|未填写姓名时匿名名称|String|'匿名用户'|
 |tipText|评论表单区提示文字|String|'你的邮箱不会显示，姓名与邮箱将作为唯一的key以便获取回复信息，建议勾选保存在浏览器中'|
 |nameText|姓名|String|'姓名'|
@@ -34,28 +70,49 @@ dependencies :{
 |allowComment|是否允许评论|Boolean|true|
 |likeColor|点赞的颜色，可以是16进制数，也可以是颜色单词|String|'red'|
 |unlikeColor|踩的颜色，可以是16进制数，也可以是颜色单词|String|'gray'|
+|AdminTagColor|作者标示的颜色，可以是16进制数，也可以是颜色单词|String|'8CC5FF'|
 
-##### 方法 
+### 数据结构
+
+list数据要求
+
+```vue
+list:[
+	{
+		data:{
+			id:int,  //必要，代表评论id
+			name:string, //必要，代表回复人名称，为空则显示为AnonymousText
+			content:string,//必要 代表回复内容
+			pid:int, //必要  代表回复父id
+			created_at:int|string, //必要 回复时间
+			is_admin:int|boolean, //判断是否为作者(管理员)
+		},
+		children:[list]
+	},
+	{...}...
+]
+```
+
+*在显示上才用的是层级递归，所以即使有无限级children，也可以显示，但是不建议这么做，因为层层右移，所以当级数过多会导致页面样式出现不可控的混乱*
+
+### 方法 
 
 所有方法除submit外均需要回调布尔值，回调true则继续执行下一步操作，不会使用回调的话，请看例子[demo.vue](https://github.com/hiRainn/emoji-comments/blob/master/src/demo.vue),会简化到只包含调用的4个方法
 
 submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),name:form.name,created_at:created_at})
+
+
 
 |方法名称|作用|参数|参数含义|
 |-|-|-|-|
 |clickReport|举报|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickLike|点赞|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
 |clickUnlike|踩|row，cab|row为通讯对象，cab为回调函数，成功则执行cab(true)|
-|submit|提交评论|row，cab|row为通讯对象，cab为回调函数|
-
-
- 
- 
+|submit|提交评论|form，cab|form为表单内容，cab为回调函数|
 
 
 
-
-<h5 id='change'>修改依赖</h5>
+<h4 id='change'>修改依赖</h4>
 
 ##### 改组件依赖ant-design-vue 与 jquery，如需使用element或其他组件，改动不大，改动如下：
 
@@ -67,4 +124,4 @@ submit函数需要执行回调cab({id:new_id,content:htmlEscape(form.content),na
 
 ###### jquery 需要修改的属性
 
-1.点击回复时的回复窗口定位以及滚动动画效果，位于index.vue中
+1. 点击回复时的回复窗口定位以及滚动动画效果，位于index.vue中
