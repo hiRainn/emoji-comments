@@ -58,6 +58,7 @@ export default {
 
 ![](https://oscimg.oschina.net/oscnet/up-91a72626557cf3b1f65414faf5aa7af2496.png)
 ![](https://oscimg.oschina.net/oscnet/up-b086cd061b6baa94822a18cebeb8516f435.png)
+![](https://oscimg.oschina.net/oscnet/up-beb6172b37b35e86444b6b3a8342200d1c6.png)
 ![](https://oscimg.oschina.net/oscnet/up-7365255ebd4f76c200b6de1407ba0643ae7.png)
 
 ### name and email can be hidden in the form by setting property showName,showEmail to false.
