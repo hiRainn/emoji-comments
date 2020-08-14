@@ -17,6 +17,7 @@
 				:showEmail="true"
 				:replayText="'回复'" 
 				:list="comment_list" 
+				title="total {Number} comments"
 				:content="form.content" 
 				ref="comment" />
 		</a-row>
@@ -39,6 +40,7 @@
 		},
 		data() {
 			return {
+				comment_number:0,
 				comment_list: [],
 				form: {
 					pid:0,
@@ -82,6 +84,8 @@
 						id:r.data.id,
 						name: this.form.name,
 						content: this.htmlEscape(this.form.content),
+						pid:form.pid,
+						created_at:r.created_at
 					}
 					if(r.data.status == 0) {
 						this.comment_number++
@@ -112,6 +116,16 @@
 				car(true)
 			},
 			clickReport(row,car) {
+				car(true)
+			},
+			cancleUnlike(row,car) {
+				// item.data.unlike_number++
+				car(true)
+			},
+			cancleLike(row,car) {
+				car(true)
+			},
+			cancleReport(row,car) {
 				car(true)
 			}
 		},
