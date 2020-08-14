@@ -85,6 +85,8 @@ export default {
 |content|comtent of textarea|String|''|
 |reportText|the text of report link text|String|'report'|
 |replayText|the text of replay link text|String|'replay'|
+|PcAnchor|anchor'name of the comment|String|'PcAnchor'|
+|PhoneAnchor|anchor'name of comment|String|'PhoneAnchor'|
 |showReport|whether to show report|Boolean|true|
 |showReplay|whether to show replay|Boolean|true|
 |showLike|whether to show like|Boolean|true|

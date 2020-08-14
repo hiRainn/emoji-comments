@@ -79,6 +79,8 @@ export default {
 |content|回复框内容|String|''|
 |reportText|举报按钮文字|String|'report'|
 |replayText|回复按钮文字|String|'replay'|
+|PcAnchor|电脑端评论的锚点|String|'PcAnchor'|
+|PhoneAnchor|手机端评论的锚点|String|'PhoneAnchor'|
 |showReport|是否显示举报按钮|Boolean|true|
 |showReplay|是否显示回复按钮|Boolean|true|
 |showLike|是否显示点赞|Boolean|true|
