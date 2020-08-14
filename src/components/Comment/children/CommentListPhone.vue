@@ -84,7 +84,7 @@
 			},
 			AnonymousText: {
 				type: String,
-				default: '匿名用户'
+				default: 'Anonymous'
 			},
 			reportText: {
 				type: String,
@@ -136,7 +136,7 @@
 			},
 			ShowText:{
 				type:String,
-				default:'点击查看所有 {Number} 条回复'
+				default:'click to view all {Number} comments'
 			},
 			HideText:{
 				type:String,

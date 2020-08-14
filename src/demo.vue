@@ -18,6 +18,8 @@
 				:replayText="'回复'" 
 				:list="comment_list" 
 				title="total {Number} comments"
+				ShowText="click to view all {Number} comments"
+				HideText="hide comments"
 				:content="form.content" 
 				ref="comment" />
 		</a-row>

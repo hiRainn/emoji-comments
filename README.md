@@ -24,8 +24,8 @@ This component relies slightly on the above dependencies, if it needs to be modi
 	@cancleLike="cancleLike"
 	@cancleUnlike="cancleUnlike"
 	:hideNumber="3"
-	ShowText="click to view all {Number} comments" //the text template that you click to expand comments on the phone
-	HideText="click to hide comments"  //the text template that you click to hide comments on the phone
+	ShowText="click to view all {Number} comments" //the text template that you click to expand comments
+	HideText="click to hide comments"  //the text template that you click to hide comments
 	repeatType="cancle"
 	:allowComment="Boolean(article.allow_comment)"
 	:showReport="true"
@@ -76,9 +76,9 @@ export default {
 |tipText|tips at the top of the form |String|'your name and email will not be published,there are the unique key to get your comments'|
 |nameText|name|String|'name'|
 |emailText|email|String|'email'|
-|hideNumber|the number of comments when it will be hidden on the phone|Number|3|
-|ShowText|the text template that you click to expand comments on the phone|String|"click to view all {Number} comments"，{Number} is a placeholder, and case must be consistent|
-|HideText|the text template that you click to hide comments on the phone|Strung|'click to hide comments'|
+|hideNumber|the number of comments when it will be hidden|Number|3|
+|ShowText|the text template that you click to expand comments|String|"click to view all {Number} comments"，{Number} is a placeholder, and case must be consistent|
+|HideText|the text template that you click to hide comments|Strung|'click to hide comments'|
 |buttonText|the text on the submit button|String|'post'|
 |cancleText|the text on the cancle button|String|'cancle'|
 |saveText|the text beside the save-checkbox|String|'save in the browser'|

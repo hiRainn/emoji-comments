@@ -1,6 +1,6 @@
 <template>
 	<div class="comments-list">
-		<a-row class="comments-list-item" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
+		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
 			<a :href="'#replay_'+item.data.id"></a>
 			<div class="comments-list-item-heading">
 				<a-row>
@@ -26,7 +26,7 @@
 						</a-row>
 						<a-row class="comment-under">
 							<span class="replay_pc" v-if="showReplay && item.data.id">
-								<span @click="Replay({item:item,index:index})">
+								<span @click="Replay({item:item,index:index,floor_id:floorId})">
 									{{replayText}}
 								</span>
 							</span>
@@ -54,12 +54,21 @@
 
 			<a :id="'replay_'+item.data.id"></a>
 			<div class="item-child" v-if="item.children.length > 0">
-				<list @Replay="Replay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport"
+				<list :ref="'subcomment_'+item.data.id" :floorId="item.data.id" @Replay="Replay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport" :isChildren="true"
 				 @cancleReport="cancleReport" @clickUnlike="clickUnlike" @clickLike="clickLike" :AdminText="AdminText"
 				 :AdminTagColor="AdminTagColor" :AnonymousText="AnonymousText" :replayText="replayText" :reportText="reportText"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay" :showReport="showReport" :likeColor="likeColor"
-				 :unlikeColor="unlikeColor" :repeatType="repeatType" :AnimateOn="AnimateOn" :comments="item.children" />
+				 :HideText="HideText" :ShowText="ShowText" :hideNumber="hideNumber" :unlikeColor="unlikeColor" :repeatType="repeatType"
+				 :AnimateOn="AnimateOn" :comments="item.children"  />
 			</div>
+			
+			<!-- click wo show all comments -->
+			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren">
+				<span @click="showComments">{{getShowText(comments.length)}}</span>
+			</a-row>
+			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren">
+				<span @click="hideComments">{{HideText}}</span>
+			</a-row>
 		</a-row>
 	</div>
 </template>
@@ -75,7 +84,7 @@
 			},
 			AnonymousText: {
 				type: String,
-				default: '匿名用户'
+				default: 'Anonymous'
 			},
 			reportText: {
 				type: String,
@@ -113,6 +122,10 @@
 				type: String,
 				default: '#8CC5FF', //mixed
 			},
+			hideNumber:{
+				type: Number,
+				default: 3, //mixed
+			},
 			AnimateOn: {
 				type: Boolean,
 				default: true
@@ -121,18 +134,46 @@
 				type: String,
 				default: 'prevent' //prevent and cancle
 			},
+			isChildren: {
+				type: Boolean,
+				default: false
+			},
+			ShowText:{
+				type:String,
+				default:'click to view all {Number} comments'
+			},
+			HideText:{
+				type:String,
+				default:'点击收起回复'
+			},
 			comments: {
 				type: Array,
 				default: []
+			},
+			//to change refs showSubComments
+			floorId:{
+				type:Number,
+				default:0
 			}
 		},
 		data() {
 			return {
+				showSubComments:false,
 				replayName: [],
 				adminPid: [],
 			}
 		},
 		methods: {
+			showSubReplay(id) {
+				var key = 'subcomment_' + id
+				this.$refs[key][0].showComments()
+			},
+			showComments(){
+				this.showSubComments = true
+			},
+			hideComments(){
+				this.showSubComments = false
+			},
 			emoji(word) {
 				// 生成html
 				const type = word.substring(1, word.length - 1);
@@ -180,7 +221,7 @@
 				if (typeof(row.item.data.like) == 'undefined') {
 					row.item.data.like = 0
 				}
-				if(row.item.data.like == 0) {
+				if (row.item.data.like == 0) {
 					this.$emit('clickLike', row.item.data, r => {
 						var id = row.item.data.id
 						var color = this.likeColor
@@ -201,7 +242,7 @@
 					if (this.repeatType == 'cancle') {
 						this.$emit('cancleLike', row.item.data, r => {
 							if (r) {
-								row.item.data.like= 0
+								row.item.data.like = 0
 								row.item.data.like_number--
 								this.$set(this.comments, row.index, row.item)
 							}
@@ -211,7 +252,7 @@
 						return false
 					}
 				}
-				
+
 			},
 			clickLike(row, car) {
 				this.$emit('clickLike', row, r => {
@@ -227,7 +268,7 @@
 				if (typeof(row.item.data.unlike) == 'undefined') {
 					row.item.data.unlike = 0
 				}
-				if(row.item.data.unlike == 0) {
+				if (row.item.data.unlike == 0) {
 					this.$emit('clickLike', row.item.data, r => {
 						var id = row.item.data.id
 						var color = this.unlikeColor
@@ -248,7 +289,7 @@
 					if (this.repeatType == 'cancle') {
 						this.$emit('cancleLike', row.item.data, r => {
 							if (r) {
-								row.item.data.unlike= 0
+								row.item.data.unlike = 0
 								row.item.data.unlike_number--
 								this.$set(this.comments, row.index, row.item)
 							}
@@ -325,6 +366,11 @@
 						}
 					}
 					return false
+				}
+			},
+			getShowText() {
+				return function(length) {
+					return this.ShowText.replace('{Number}',length)
 				}
 			}
 		},
@@ -434,13 +480,13 @@
 
 	.item-child {
 		margin-left: 50px;
-		
-		div.comments-list-item:last-child{
+
+		div.comments-list-item:last-child {
 			margin-bottom: 0px;
 			border-bottom: none;
 		}
-		
-		div.comments-list-item:first-child{
+
+		div.comments-list-item:first-child {
 			margin-top: 0px;
 			margin-bottom: 10px;
 			padding-top: 10px;

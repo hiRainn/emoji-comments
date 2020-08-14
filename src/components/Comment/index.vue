@@ -4,7 +4,7 @@
 			<a-col :xs="0" :md="24">
 				<!-- v-if for async  -->
 				<div class="comment-title" >{{title}}</div>
-				<comment-list v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
+				<comment-list ref="PcComment" v-if="list.length > 0" @Replay="Replay" @clickReport="clickReport" @clickUnlike="clickUnlike"
 				 @cancleReport="cancleReport" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickLike="clickLike"
 				 :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
 				 :showReport="showReport" :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor"
@@ -134,31 +134,31 @@
 			},
 			AnonymousText: {
 				type: String,
-				default: '匿名用户'
+				default: 'Anonymous'
 			},
 			tipText: {
 				type: String,
-				default: '你的邮箱不会显示，姓名与邮箱将作为唯一的key以便获取回复信息，建议勾选保存在浏览器中'
+				default: 'your name and email will not be published,there are the unique key to get your comments'
 			},
 			nameText: {
 				type: String,
-				default: '姓名'
+				default: 'name'
 			},
 			emailText: {
 				type: String,
-				default: '邮箱'
+				default: 'email'
 			},
 			buttonText: {
 				type: String,
-				default: '提交'
+				default: 'post'
 			},
 			cancleText: {
 				type: String,
-				default: '取消'
+				default: 'cancle'
 			},
 			saveText: {
 				type: String,
-				default: '保存在浏览器中'
+				default: 'save in the browser'
 			},
 			content: {
 				type: String,
@@ -230,11 +230,11 @@
 			},
 			ShowText:{
 				type:String,
-				default:'点击查看所有{Number}条回复'
+				default:'click to view all {Number} comments'
 			},
 			HideText:{
 				type:String,
-				default:'点击收起回复'
+				default:'click to hide comments'
 			},
 		},
 		data() {
@@ -288,7 +288,11 @@
 					if (r) {
 						this.visible = false
 						if(this.floorId) {
+							console.log(1)
 							this.$refs['phoneComment'].showSubReplay(this.floorId)
+							console.log(2)
+							this.$refs['PcComment'].showSubReplay(this.floorId)
+							console.log(3)
 						}
 						var data = {
 							data: {
@@ -358,6 +362,7 @@
 				}
 			},
 			Replay(row) {
+				this.floorId = row.floor_id
 				var id = row.item.data.id
 				this.form.pid = parseInt(id)
 				var id = '#replay_' + this.form.pid
