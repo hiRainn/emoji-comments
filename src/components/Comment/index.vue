@@ -9,7 +9,7 @@
 				 :comments="list" :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment"
 				 :showReport="showReport" :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor"
 				 :unlikeColor="unlikeColor" :repeatType="repeatType" :AnimateOn="AnimateOn" :replayText="replayText" :reportText="reportText"
-				 :AdminText="AdminText" :AdminTagColor="AdminTagColor" />
+				 :AdminText="AdminText" :AdminTagColor="AdminTagColor"  :hideNumber="hideNumber" :PhoneAnchor="PhoneAnchor" />
 			</a-col>
 			<a-col :xs="24" :md="0">
 				<div class="comment-title">{{title}}</div>
@@ -18,7 +18,7 @@
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay && allowComment" :showReport="showReport"
 				 :showEmail="showEmail" :showName="showName" :AnonymousText="AnonymousText" :likeColor="likeColor" :unlikeColor="unlikeColor"
 				 :repeatType="repeatType" :HideText="HideText" :ShowText="ShowText" :AnimateOn="AnimateOn" :replayText="replayText"
-				 :reportText="reportText" :AdminTagColor="AdminTagColor" :hideNumber="hideNumber" />
+				 :reportText="reportText" :AdminTagColor="AdminTagColor" :hideNumber="hideNumber" :PcAnchor="PcAnchor" />
 			</a-col>
 		</a-row>
 
@@ -235,6 +235,14 @@
 			HideText:{
 				type:String,
 				default:'click to hide comments'
+			},
+			PhoneAnchor:{
+				type:String,
+				default:'PhoneAnchor'
+			},
+			PcAnchor:{
+				type:String,
+				default:'PcAnchor'
 			},
 		},
 		data() {
@@ -478,10 +486,9 @@
 
 
 		.comments-list {
-			padding-top: 10px;
 
 			.comments-list-item {
-				margin-bottom: 10px;
+				margin-top: 10px;
 
 				.comments-list-item-heading {
 					img {

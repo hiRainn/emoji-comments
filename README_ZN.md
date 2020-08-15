@@ -70,7 +70,7 @@ export default {
 |tipText|评论表单区提示文字|String|'your name and email will not be published,there are the unique key to get your comments'|
 |nameText|姓名|String|'name'|
 |emailText|邮箱|String|'email'|
-|hideNumber|子评论超过多少条隐藏|Number|3|
+|hideNumber|子评论超过多少条隐藏,小于等于0时显示所有|Number|3|
 |ShowText|子评论点击显示文字模板|String|"click to view all {Number} comments"，{Number}为占位符，大小写必须一致，必须|
 |HideText|子评论收起展开回复|Strung|'click to hide comments'|
 |buttonText|提交按钮名称|String|'post'|

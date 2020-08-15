@@ -1,8 +1,7 @@
 <template>
 	<div class="comments-list">
-		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
-			<a :href="'#replay_'+item.data.id"></a>
-			<div class="comments-list-item-heading">
+		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
+			<div  :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading" :id=" '#' + PcAnchor+ item.data.id">
 				<a-row>
 					<a-col :span="2">
 						<img v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
@@ -52,21 +51,20 @@
 				</a-row>
 			</div>
 
-			<a :id="'replay_'+item.data.id"></a>
 			<div class="item-child" v-if="item.children.length > 0">
 				<list :ref="'subcomment_'+item.data.id" :floorId="item.data.id" @Replay="Replay" @cancleLike="cancleLike" @cancleUnlike="cancleUnlike" @clickReport="clickReport" :isChildren="true"
 				 @cancleReport="cancleReport" @clickUnlike="clickUnlike" @clickLike="clickLike" :AdminText="AdminText"
 				 :AdminTagColor="AdminTagColor" :AnonymousText="AnonymousText" :replayText="replayText" :reportText="reportText"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay" :showReport="showReport" :likeColor="likeColor"
 				 :HideText="HideText" :ShowText="ShowText" :hideNumber="hideNumber" :unlikeColor="unlikeColor" :repeatType="repeatType"
-				 :AnimateOn="AnimateOn" :comments="item.children"  />
+				 :AnimateOn="AnimateOn" :comments="item.children" PcAnchor="PcAnchor" />
 			</div>
 			
 			<!-- click wo show all comments -->
-			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren">
+			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren && hideNumber > 0">
 				<span @click="showComments">{{getShowText(comments.length)}}</span>
 			</a-row>
-			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren">
+			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren && hideNumber > 0">
 				<span @click="hideComments">{{HideText}}</span>
 			</a-row>
 		</a-row>
@@ -145,6 +143,10 @@
 			HideText:{
 				type:String,
 				default:'点击收起回复'
+			},
+			PcAnchor:{
+				type:String,
+				default:'PcAnchor'
 			},
 			comments: {
 				type: Array,
@@ -488,7 +490,6 @@
 
 		div.comments-list-item:first-child {
 			margin-top: 0px;
-			margin-bottom: 10px;
 			padding-top: 10px;
 			border-top: 1px dotted #eee;
 		}

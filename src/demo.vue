@@ -19,7 +19,7 @@
 				:list="comment_list" 
 				title="total {Number} comments"
 				ShowText="click to view all {Number} comments"
-				HideText="hide comments"
+				HideText="hide comment"
 				:content="form.content" 
 				ref="comment" />
 		</a-row>

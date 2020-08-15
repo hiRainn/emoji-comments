@@ -76,7 +76,7 @@ export default {
 |tipText|tips at the top of the form |String|'your name and email will not be published,there are the unique key to get your comments'|
 |nameText|name|String|'name'|
 |emailText|email|String|'email'|
-|hideNumber|the number of comments when it will be hidden|Number|3|
+|hideNumber|the number of comments when it will be hidden, show all when hideNumber <= 0|Number|3|
 |ShowText|the text template that you click to expand comments|String|"click to view all {Number} comments"，{Number} is a placeholder, and case must be consistent|
 |HideText|the text template that you click to hide comments|Strung|'click to hide comments'|
 |buttonText|the text on the submit button|String|'post'|

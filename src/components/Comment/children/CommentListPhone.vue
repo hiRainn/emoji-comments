@@ -1,7 +1,7 @@
 <template>
 	<div class="comments-list">
-		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
-			<div  class="comments-list-item-heading-phone">
+		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
+			<div :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading-phone" :id= "'#' + PhoneAnchor+ item.data.id">
 				<a-row>
 					<a-col :span="2" :class="{'phone-img':isChildren}">
 						<img  v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
@@ -54,17 +54,17 @@
 				 @cancleReport="cancleReport" @clickUnlike="clickUnlike" @clickLike="clickLike" :AdminText="AdminText"
 				 :AdminTagColor="AdminTagColor" :AnonymousText="AnonymousText" :replayText="replayText" :reportText="reportText"
 				 :showLike="showLike" :showUnlike="showUnlike" :showReplay="showReplay" :showReport="showReport" :likeColor="likeColor"
-				 :unlikeColor="unlikeColor" :HideText="HideText" :ShowText="ShowText" :repeatType="repeatType" :AnimateOn="AnimateOn" :hideNumber="hideNumber" :comments="item.children" />
+				 :unlikeColor="unlikeColor" :HideText="HideText" :ShowText="ShowText" :PhoneAnchor="PhoneAnchor" :repeatType="repeatType" :AnimateOn="AnimateOn" :hideNumber="hideNumber" :comments="item.children" />
 			</div>
-			
 			<!-- click wo show all comments -->
-			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren">
+			<a-row v-if="comments.length> hideNumber && !showSubComments && index == hideNumber - 1 && isChildren && hideNumber > 0">
 				<span @click="showComments">{{getShowText(comments.length)}}</span>
 			</a-row>
-			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren">
+			<a-row v-if="comments.length> hideNumber && showSubComments && index == comments.length - 1 && isChildren && hideNumber > 0">
 				<span @click="hideComments">{{HideText}}</span>
 			</a-row>
 		</a-row>
+		
 	</div>
 </template>
 
@@ -145,6 +145,10 @@
 			comments: {
 				type: Array,
 				default: []
+			},
+			PhoneAnchor:{
+				type:String,
+				default:'PhoneAnchor'
 			},
 			//to change refs showSubComments
 			floorId:{
@@ -486,7 +490,6 @@
 		
 		div.comments-list-item:first-child{
 			margin-top: 0px;
-			margin-bottom: 10px;
 			padding-top: 10px;
 			border-top: 1px dotted #eee;
 		}
