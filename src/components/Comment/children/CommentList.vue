@@ -1,7 +1,7 @@
 <template>
 	<div class="comments-list">
 		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
-			<div  :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading" :id=" '#' + PcAnchor+ item.data.id">
+			<div  :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading" :id=" PcAnchor+ item.data.id">
 				<a-row>
 					<a-col :span="2">
 						<img v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
@@ -397,6 +397,23 @@
 					this.adminPid.push(this.comments[p]['data']['id'])
 				}
 			}
+			
+			this.$nextTick(() => {
+				let anchor = this.$route.hash.replace(/^#{1}/,'')
+				if(anchor) {
+					let id = parseInt(anchor.replace(this.PcAnchor,''))
+					for(let p in this.comments) {
+						if( this.hideNumber > 0 && p >= this.hideNumber && id == this.comments[p]['data']['id']) {
+							this.showSubComments = true
+							break
+						}
+					}
+					this.$nextTick( () => {
+						$("html,body").animate({scrollTop: $("#"+anchor).offset().top}, 300);
+					})
+					
+				}
+			})
 
 		},
 	};

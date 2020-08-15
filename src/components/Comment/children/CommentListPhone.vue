@@ -1,7 +1,7 @@
 <template>
 	<div class="comments-list">
 		<a-row class="comments-list-item" :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" v-for="(item,index) in comments" v-bind:key="index" :id="'floor_' + item.data.id">
-			<div :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading-phone" :id= "'#' + PhoneAnchor+ item.data.id">
+			<div :hidden="hideNumber -1  < index && !showSubComments && isChildren && hideNumber > 0" class="comments-list-item-heading-phone" :id= "PhoneAnchor+ item.data.id">
 				<a-row>
 					<a-col :span="2" :class="{'phone-img':isChildren}">
 						<img  v-if="item.data.is_admin" src="../assets/img/author.png" style="" />
