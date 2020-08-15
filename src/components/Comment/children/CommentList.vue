@@ -409,7 +409,7 @@
 						}
 					}
 					this.$nextTick( () => {
-						$("html,body").animate({scrollTop: $("#"+anchor).offset().top}, 300);
+						$("html,body").animate({scrollTop: $("#"+anchor).offset().top - 100}, 300);
 					})
 					
 				}

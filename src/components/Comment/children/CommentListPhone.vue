@@ -395,6 +395,23 @@
 					this.adminPid.push(this.comments[p]['data']['id'])
 				}
 			}
+			
+			this.$nextTick(() => {
+				let anchor = this.$route.hash.replace(/^#{1}/,'')
+				if(anchor) {
+					let id = parseInt(anchor.replace(this.PhoneAnchor,''))
+					for(let p in this.comments) {
+						if( this.hideNumber > 0 && p >= this.hideNumber && id == this.comments[p]['data']['id']) {
+							this.showSubComments = true
+							break
+						}
+					}
+					this.$nextTick( () => {
+						$("html,body").animate({scrollTop: $("#"+anchor).offset().top - 100}, 300);
+					})
+					
+				}
+			})
 
 		},
 	};
