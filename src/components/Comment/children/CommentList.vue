@@ -494,6 +494,7 @@
 	}
 
 	.comment-under {
+		padding-right: 25px;
 		border-bottom: none !important
 	}
 
