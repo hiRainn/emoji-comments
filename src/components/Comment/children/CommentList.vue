@@ -271,7 +271,7 @@
 					row.item.data.unlike = 0
 				}
 				if (row.item.data.unlike == 0) {
-					this.$emit('clickLike', row.item.data, r => {
+					this.$emit('clickUnlike', row.item.data, r => {
 						var id = row.item.data.id
 						var color = this.unlikeColor
 						if (r) {
