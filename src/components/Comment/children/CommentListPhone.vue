@@ -287,7 +287,7 @@
 					})
 				} else {
 					if (this.repeatType == 'cancle') {
-						this.$emit('cancleLike', row.item.data, r => {
+						this.$emit('cancleUnlike', row.item.data, r => {
 							if (r) {
 								row.item.data.unlike = 0
 								row.item.data.unlike_number--
