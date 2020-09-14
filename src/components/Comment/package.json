@@ -1,9 +1,0 @@
-{
- 	"dependencies": {
- 		"element-ui": "^2.13.2",
- 		"jquery": "^3.5.1",
- 		"sass": "^1.26.10",
- 		"vue": "^2.6.11",
-		"svg-sprite-loader": "^5.0.0"
- 	}
- }
